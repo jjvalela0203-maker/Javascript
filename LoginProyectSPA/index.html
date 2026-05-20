@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Micaela SPA</title>
+    <link rel="stylesheet" href="src/style.css">
+  </head>
+  <body>
+
+    <!-- ═══════════════ VIEW: LOGIN ═══════════════ -->
+    <div id="view-login" class="view active">
+      <div class="login-container">
+        <img src="src/assets/img/Trifuerza.png" alt="Logo">
+        <h1>Welcome back</h1>
+        <p>Don't have an account? <a id="registerLink" href="#">Sign up</a></p>
+        <form id="loginForm">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="your.username" autocomplete="username">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password">
+          <button id="login" type="submit">Sign In →</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ═══════════════ VIEW: REGISTER ═══════════════ -->
+    <div id="view-register" class="view">
+      <div class="register-container">
+        <form id="registerForm">
+          <label for="newusername">Username</label>
+          <input type="text" id="newusername" name="newusername" placeholder="your.username">
+
+          <label for="newpassword">Password</label>
+          <input type="password" id="newpassword" name="newpassword" placeholder="••••••••">
+
+          <label for="fullname">Full Name</label>
+          <input type="text" id="fullname" name="name" placeholder="John Doe">
+
+          <label for="birthdate">Birthdate</label>
+          <input type="date" id="birthdate" name="birthdate">
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com">
+
+          <label for="description">About you</label>
+          <textarea id="description" name="description" placeholder="Tell us a bit about yourself..."></textarea>
+
+          <label for="url">Photo URL</label>
+          <input type="url" id="url" name="url" placeholder="https://...">
+
+          <button type="submit" id="register">Create Account</button>
+        </form>
+        <button id="cancel">← Back to Login</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════ VIEW: DASHBOARD ═══════════════ -->
+    <div id="view-dashboard" class="view">
+      <header class="dashboard-header">
+        <div class="header-left">
+          <h1 id="dashboard-title">Dashboard</h1>
+          <p>Sesión activa</p>
+        </div>
+        <button id="logout">Cerrar Sesión</button>
+      </header>
+      <div id="dashboard-container"></div>
+    </div>
+
+    <script src="src/app.js"></script>
+  </body>
+</html>

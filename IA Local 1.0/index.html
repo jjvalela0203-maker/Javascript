@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resumidor de PDF</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Tesseract.js for OCR (scanned PDFs) - SEBASTIAN -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>// resumidor de pdf</h1>
+    <p>powered by gemma2:2b · ollama local</p>
+  </header>
+
+  <div class="card">
+
+    <div id="drop-zone">
+      <input type="file" id="file-input" accept="application/pdf" />
+      <span class="icon">📄</span>
+      <span class="label">Haz clic o arrastra un PDF aquí</span>
+    </div>
+
+    <div id="file-name"></div>
+
+    <button id="btn-resumir" disabled>Resumir</button>
+
+    <div id="status"></div>
+
+    <div id="output">
+      <h2>Resumen</h2>
+      <p id="output-text"></p>
+    </div>
+
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>
