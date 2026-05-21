@@ -479,3 +479,305 @@ button {
 
 #view-login::before, #view-register::before, #view-dashboard::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255,210,0,0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 90%, rgba(120,60,255,0.06) 0%, transparent 60%), radial-gradient(ellipse 40% 40% at 50% 50%, rgba(255,100,80,0.04) 0%, transparent 70%); pointer-events: none; z-index: 0; }
 #view-login::after, #view-register::after { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+
+
+/* ═══════════════════════════════════════════════════════
+   SECCIÓN DE GESTIÓN DE TARJETAS
+   Todos estos estilos son nuevos y siguen las mismas
+   variables CSS (--accent, --border, --text-muted, etc.)
+   que usa el resto del proyecto, para mantener coherencia visual.
+   ═══════════════════════════════════════════════════════ */
+
+/*
+  .gestion-wrapper es el contenedor principal de toda la sección.
+  Usa padding para separarse del borde de la pantalla,
+  igual que el dashboard-header usa padding: 16px 32px.
+  border-top crea una línea divisoria sutil entre la tarjeta
+  del usuario y esta sección, usando la misma variable --border del proyecto.
+*/
+.gestion-wrapper {
+  width: 100%;
+  padding: 32px;
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+
+/*
+  .gestion-topbar es la barra superior con el buscador y los botones.
+  display: flex con gap los separa uniformemente.
+  flex-wrap: wrap hace que en pantallas pequeñas los elementos
+  bajen a la siguiente línea en lugar de desbordarse.
+  align-items: center los alinea verticalmente al centro.
+*/
+.gestion-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+/*
+  .gestion-search es el input de búsqueda.
+  flex: 1 hace que ocupe todo el espacio disponible,
+  empujando los botones hacia la derecha.
+  Los demás estilos (background, border, color, etc.) son iguales
+  a los que ya tiene el CSS para inputs normales, para que sea consistente.
+*/
+.gestion-search {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.gestion-search:focus {
+  border-color: rgba(255,210,0,0.5);
+  background: rgba(255,210,0,0.04);
+  box-shadow: 0 0 0 3px rgba(255,210,0,0.08);
+}
+
+/*
+  .gestion-btn-search es el botón "Buscar".
+  Usa los colores de superficie del proyecto (--surface, --surface-hover)
+  en lugar del amarillo --accent, para que visualmente sea secundario
+  respecto al botón "Nueva tarjeta".
+*/
+.gestion-btn-search {
+  padding: 10px 20px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+}
+
+.gestion-btn-search:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-1px);
+}
+
+/*
+  .gestion-btn-new es el botón principal de acción.
+  Usa --accent (el amarillo) igual que los botones primarios
+  del login y registro, para que tenga el mismo peso visual.
+*/
+.gestion-btn-new {
+  padding: 10px 24px;
+  background: var(--accent);
+  color: #0a0a0f;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 20px rgba(255,210,0,0.3);
+  transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+}
+
+.gestion-btn-new:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255,210,0,0.45);
+  background: #ffe033;
+}
+
+.gestion-btn-new:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/*
+  .card-form es el formulario de creación de tarjetas.
+  Mismo estilo de "panel" que el login-container y register-container:
+  fondo semitransparente, borde sutil, border-radius, backdrop-filter.
+  margin-bottom separa el formulario de las tarjetas debajo.
+*/
+.card-form {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 32px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+  animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/*
+  .hidden es la clase que usamos para ocultar el formulario.
+  display: none lo saca completamente del flujo del documento,
+  a diferencia de visibility: hidden que deja el espacio ocupado.
+  JavaScript agrega o quita esta clase con classList.add/remove.
+*/
+.hidden {
+  display: none !important;
+}
+
+/*
+  .card-form-grid organiza los campos del formulario en dos columnas.
+  gap: 16px da espacio entre los campos sin necesitar margins individuales.
+*/
+.card-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/*
+  .card-form-full hace que un campo ocupe las dos columnas.
+  Lo usamos para el textarea de descripción que necesita más espacio.
+  grid-column: 1 / -1 significa "desde la columna 1 hasta la última".
+*/
+.card-form-full {
+  grid-column: 1 / -1;
+}
+
+/*
+  .card-form-actions es la fila de botones del formulario (Cancelar / Crear).
+  justify-content: flex-end los empuja hacia la derecha,
+  igual que muchos formularios profesionales que ponen las acciones al final.
+*/
+.card-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/*
+  Botón Cancelar del formulario de tarjetas.
+  Estilo "ghost": sin fondo, solo borde, para que sea visualmente secundario.
+  Igual al botón #cancel del login.
+*/
+#card-cancel-btn {
+  padding: 10px 24px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+#card-cancel-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: rgba(255,255,255,0.2);
+}
+
+/*
+  Botón Crear del formulario.
+  Mismo estilo que #login y #register: fondo amarillo --accent,
+  texto oscuro, sombra dorada. Es el botón de acción principal.
+*/
+#card-create-btn {
+  padding: 10px 28px;
+  background: var(--accent);
+  color: #0a0a0f;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 20px rgba(255,210,0,0.3);
+}
+
+#card-create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255,210,0,0.45);
+  background: #ffe033;
+}
+
+#card-create-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/*
+  #card-data es el contenedor donde se pintan las tarjetas del JSON.
+  display: flex con flex-wrap: wrap hace que las tarjetas se acomoden
+  en filas automáticamente según el ancho disponible.
+  gap: 24px es el mismo espacio que usa #dashboard-container.
+*/
+#card-data {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: flex-start;
+}
+
+/*
+  .card-actions es la fila de botones Editar / Eliminar dentro de cada tarjeta.
+  border-top separa visualmente los botones del contenido de la tarjeta.
+  La misma variable --border del proyecto para consistencia.
+*/
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  gap: 10px;
+}
+
+/*
+  .btn-edit: botón de acción secundaria.
+  Usa un tono ámbar/dorado más suave, relacionado con --accent
+  pero sin ser el amarillo puro, para diferenciarlo del botón Crear.
+*/
+.btn-edit {
+  flex: 1;
+  padding: 9px 0;
+  background: rgba(255,210,0,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(255,210,0,0.25);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.btn-edit:hover {
+  background: rgba(255,210,0,0.2);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/*
+  .btn-delete: botón de acción destructiva.
+  Usa --danger (el rojo del proyecto) igual que el botón de logout,
+  para que el usuario lo identifique visualmente como una acción peligrosa.
+*/
+.btn-delete {
+  flex: 1;
+  padding: 9px 0;
+  background: rgba(255,77,109,0.1);
+  color: var(--danger);
+  border: 1px solid rgba(255,77,109,0.25);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.btn-delete:hover {
+  background: rgba(255,77,109,0.2);
+  border-color: var(--danger);
+  transform: translateY(-1px);
+}
+
+/* ─── RESPONSIVE para la sección de gestión ─── */
+/*
+  En pantallas pequeñas el formulario pasa a una sola columna,
+  igual que las tarjetas que ya se hacen width: 100% en el breakpoint existente.
+*/
+@media (max-width: 480px) {
+  .gestion-wrapper {
+    padding: 20px 16px;
+  }
+
+  .card-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #card-data {
+    justify-content: center;
+  }
+}
