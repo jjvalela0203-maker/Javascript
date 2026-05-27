@@ -34,6 +34,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.textarea {
+  resize: none;
+  overflow-y: hidden;
+}
+
 /* ─── BACKGROUND MESH ─── */
 .index, .dashboard {
   position: relative;
@@ -302,6 +307,9 @@ button {
 
 .header-left { display: flex; flex-direction: column; gap: 2px; }
 
+#edit-user {
+  margin-left: 50rem;
+}
 #logout {
   padding: 9px 20px;
   background: transparent;
@@ -571,7 +579,7 @@ button {
   Usa --accent (el amarillo) igual que los botones primarios
   del login y registro, para que tenga el mismo peso visual.
 */
-.gestion-btn-new {
+.gestion-btn-new, #edit-user, #edit-user-cancel, #edit-user-save {
   padding: 10px 24px;
   background: var(--accent);
   color: #0a0a0f;
@@ -580,10 +588,35 @@ button {
   transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
 }
 
-.gestion-btn-new:hover {
+#edit-user-cancel, #edit-user-save {
+  margin-top: 1.5rem
+}
+.gestion-btn-new:hover, #edit-user:hover, #edit-user-cancel:hover, #edit-user-save:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(255,210,0,0.45);
   background: #ffe033;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;                          /* cubre toda la pantalla */
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-overlay.hidden { display: none; }
+
+.modal-box {
+  background: black;    /* usa tu variable existente */
+  border-radius: 1rem;
+  padding: 2rem;
+  width: min(480px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .gestion-btn-new:disabled {
@@ -704,7 +737,7 @@ button {
 #card-data {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 20px;
   justify-content: flex-start;
 }
 

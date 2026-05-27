@@ -28,55 +28,16 @@ function navigate(viewName) {
   window.scrollTo(0, 0);
 }
 
-
-// ═══════════════════════════════════════════════════════
-//  USUARIOS (login con localStorage)
-// ═══════════════════════════════════════════════════════
-
 /*
-  Lista de usuarios de prueba.
-  Solo se usa la primera vez que alguien abre la app,
-  cuando localStorage todavía no tiene nada guardado.
+  La siguiente parte del codigo controla que la scroll de los textareas se ajuste automáticamente a su contenido. 
 */
-const initialUsers = [
-  {
-    username: "neyder.ramirez",
-    password: "123Admin.**",
-    fullname: "Neyder Ramirez",
-    age: 22,
-    email: "neyderramirez@gmail.com",
-    description: "un valecita de riwi",
-    url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtTOnh2HTt1VNUg6Bc-0PXGioqjs0yHiDsxw&s"
-  },
-  {
-    username: "juan.bustamante",
-    password: "HJ_503",
-    fullname: "Juan Bustamante",
-    age: 24,
-    email: "juanbustamante@gmail.com",
-    description: "un pá de riwi",
-    url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMfANTCUetDzc96ibKIOHc0BRQ5Ax9_bCKFA&s"
-  },
-  {
-    username: "kevin.mendoza",
-    password: "OnlyEnglish.**",
-    fullname: "Kevin Mendoza",
-    age: 22,
-    email: "kevinmendoza@gmail.com",
-    description: "un bilingue de riwi",
-    url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmukQvYkn42kSsuHU91OyhVDie4lmRUNFzcg&s"
-  }
-];
-
-/*
-  Si localStorage no tiene usuarios guardados todavía,
-  metemos la lista inicial. Esto solo pasa la primera vez.
-  Las siguientes veces ya encuentra datos y no sobreescribe nada.
-*/
-if (!localStorage.getItem("users")) {
-  localStorage.setItem("users", JSON.stringify(initialUsers));
-}
-
+const textarea = document.querySelectorAll('.textarea');
+textarea.forEach(textarea => {
+  textarea.addEventListener('input', () => {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  });
+});
 
 // ═══════════════════════════════════════════════════════
 //  FORMULARIO DE LOGIN
@@ -87,7 +48,7 @@ document.getElementById("registerLink").addEventListener("click", (e) => {
   navigate('register');
 });
 
-document.getElementById("loginForm").addEventListener("submit", (event) => {
+document.getElementById("loginForm").addEventListener("submit", async (event) => {
   event.preventDefault(); // Evita que el form recargue la página al enviarse
 
   const username = document.getElementById("username").value;
@@ -97,17 +58,12 @@ document.getElementById("loginForm").addEventListener("submit", (event) => {
     alert("Por favor ingresa usuario y contraseña.");
     return;
   }
-
-  const currentUsers = JSON.parse(localStorage.getItem("users")) || [];
-
   /*
-    find() recorre el array y devuelve el primer elemento
-    que cumpla la condición. Si no encuentra ninguno, devuelve undefined.
-    Aquí buscamos un usuario cuyo username Y password coincidan.
+    Aqui hacemos un fetch a json-server para verificar las credenciales.
   */
-  const user = currentUsers.find(
-    (u) => u.username === username && u.password === password
-  );
+  const res  = await fetch(`http://localhost:3000/users?username=${username}&password=${password}`);
+  const data = await res.json();
+  const user = data[0];
 
   if (user) {
     /*
@@ -115,7 +71,7 @@ document.getElementById("loginForm").addEventListener("submit", (event) => {
       Así cuando el usuario recargue la página, sabemos que ya estaba logueado.
     */
     localStorage.setItem("user", JSON.stringify(user));
-    loadDashboard(); // Carga el contenido del dashboard
+    await loadDashboard(); // Carga el contenido del dashboard
     navigate('dashboard'); // Muestra la vista dashboard
   } else {
     alert("Usuario o contraseña incorrectos.");
@@ -141,7 +97,7 @@ document.querySelectorAll("input[type='date']").forEach(input => {
 });
 
 /*
-  calculateAge recibe una fecha de nacimiento en formato "YYYY-MM-DD"
+  calculateAge recibe una fecha de nacimiento en formato YYYY-MM-DD
   y devuelve la edad en años completos.
   La lógica del mes y día sirve para no contar el año actual
   si el cumpleaños todavía no ha llegado.
@@ -159,7 +115,7 @@ const calculateAge = (birthdate) => {
   return age;
 };
 
-document.getElementById("registerForm").addEventListener("submit", (event) => {
+document.getElementById("registerForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
   /*
@@ -179,14 +135,18 @@ document.getElementById("registerForm").addEventListener("submit", (event) => {
     return;
   }
 
-  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const checkRes = await fetch(`http://localhost:3000/users?username=${newusername}`);
+  const existing = await checkRes.json();
 
-  if (users.find(user => user.username === newusername)) {
+  if (existing.length > 0) {
     alert("El usuario ya existe, por favor elige otro nombre de usuario.");
     return;
   }
 
-  users.push({
+await fetch("http://localhost:3000/users", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
     username: newusername,
     password: newpassword,
     fullname: name,
@@ -194,9 +154,9 @@ document.getElementById("registerForm").addEventListener("submit", (event) => {
     email,
     description,
     url
-  });
+  })
+});
 
-  localStorage.setItem("users", JSON.stringify(users));
   alert("Usuario registrado exitosamente. Ahora puedes iniciar sesión.");
   document.getElementById("registerForm").reset();
   navigate('login');
@@ -234,7 +194,7 @@ async function loadDashboard() {
     return;
   }
 
-  // Pinta la tarjeta del usuario logueado (igual que antes)
+  // Pinta la tarjeta del usuario logueado 
   document.getElementById("dashboard-title").textContent = `Bienvenido/a, ${user.fullname}`;
   document.getElementById("dashboard-container").innerHTML = `
     <div class="card">
@@ -250,7 +210,7 @@ async function loadDashboard() {
         <p><b>Description:</b><br>${user.description}</p>
       </article>
     </div>`;
-
+  
   /*
     Después de pintar la tarjeta del usuario,
     cargamos las tarjetas del JSON.
@@ -261,11 +221,59 @@ async function loadDashboard() {
   await refreshCards();
 }
 
+// ═══════════════════════════════════════════════════════
+//  EDITAR PERFIL DE USUARIO
+// ═══════════════════════════════════════════════════════
+
+function openEditModal(user){
+  document.getElementById("edit-fullname").value = user.fullname;
+  document.getElementById("edit-email").value = user.email;
+  document.getElementById("edit-description").value = user.description;
+  document.getElementById("edit-url").value = user.url;
+
+  document.getElementById("modal-edit-user").classList.remove("hidden");
+}
+
+function closeEditModal(){
+  document.getElementById("modal-edit-user").classList.add("hidden");
+  document.getElementById("edit-user-form").reset();
+}
+
+document.getElementById("edit-user").addEventListener("click", ()=> {
+  const user = JSON.parse(localStorage.getItem("user"));
+  openEditModal(user);
+});
+
+document.getElementById("edit-user-cancel").addEventListener("click", closeEditModal);
+
+document.getElementById("edit-user-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const updated = {
+    ...user,
+    fullname: document.getElementById("edit-fullname").value,
+    email: document.getElementById("edit-email").value,
+    description: document.getElementById("edit-description").value,
+    url: document.getElementById("edit-url").value
+  };
+
+  await fetch(`http://localhost:3000/users/${user.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updated)
+  });
+
+  localStorage.setItem("user", JSON.stringify(updated));
+  closeEditModal();
+  await loadDashboard();
+})
+
+
 
 // ═══════════════════════════════════════════════════════
 //  GESTIÓN DE TARJETAS (JSON-server)
-// ═══════════════════════════════════════════════════════
-
+// ══════════════════════════════════════════
 /*
   getData hace un fetch al servidor local de json-server.
   fetch devuelve una Promise, por eso usamos async/await.
